@@ -2,4 +2,5 @@
 .mule/
 .tooling/
 .tooling-apps-cache/
+secrets.yaml
 
