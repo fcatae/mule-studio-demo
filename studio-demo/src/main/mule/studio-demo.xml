@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="bf2c4739-26fa-49e9-bedb-73cf008c2104" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="7f9e2820-cf0e-4217-a670-481ef70142c6" >
+		<salesforce:cached-basic-connection username="${sf.user}" password="${sf.pwd}" securityToken="${sf.token}" />
+	</salesforce:sfdc-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="fe3eaecc-4eb0-426d-a06a-fb0dd20a69ef" file="secrets.yaml" />
 	<flow name="WebServer" doc:id="b856b357-137a-457e-9bd3-57ac26f2a380" >
 		<http:listener doc:name="/accounts" doc:id="037b956c-4c39-4e15-8ebc-a32f8b01d6e0" path="/accounts" config-ref="HTTP_Listener_config"/>
-		<ee:transform doc:name="Transform Message" doc:id="6fb66e90-19fc-4816-a039-a4d7eeb4c174" >
+		<salesforce:query doc:name="Query" doc:id="c822c4e1-7138-4735-a450-af8fceb69d9a" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query >SELECT Id, AccountNumber, Name FROM Account</salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="ba2178c6-1804-493e-906f-7febb373bc15" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+result: payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="Config" doc:id="3fbbff46-c0e7-41b9-9627-a7d1f6add1b2" >
+		<http:listener doc:name="/config" doc:id="cece59a1-662a-4ee1-a730-b18b3a7aa34e" config-ref="HTTP_Listener_config" path="/config"/>
+		<set-variable value="${sf.user}" doc:name="Set Variable" doc:id="51509ce7-655b-49d6-8d92-70d855759445" variableName="user"/>
+		<ee:transform doc:name="Transform Message" doc:id="8ed3f5ab-c347-4695-9e4b-d94ed4df6bba" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	"hello world": true
+	user: vars.user
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
