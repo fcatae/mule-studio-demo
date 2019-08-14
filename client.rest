@@ -2,3 +2,6 @@ GET http://localhost:8081/accounts
 
 ###
 GET http://localhost:8081/config
+
+###
+GET http://localhost:8081/sf

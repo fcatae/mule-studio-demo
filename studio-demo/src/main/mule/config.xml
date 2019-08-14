@@ -13,10 +13,10 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		<salesforce:cached-basic-connection username="${sf.user}" password="${sf.pwd}" securityToken="${sf.token}" />
 	</salesforce:sfdc-config>
 	<configuration-properties doc:name="Configuration properties" doc:id="fe3eaecc-4eb0-426d-a06a-fb0dd20a69ef" file="secrets.yaml" />
-	<flow name="WebServer" doc:id="b856b357-137a-457e-9bd3-57ac26f2a380" >
-		<http:listener doc:name="/accounts" doc:id="037b956c-4c39-4e15-8ebc-a32f8b01d6e0" path="/accounts" config-ref="HTTP_Listener_config"/>
+	<flow name="SF" doc:id="b856b357-137a-457e-9bd3-57ac26f2a380" >
+		<http:listener doc:name="/sf" doc:id="037b956c-4c39-4e15-8ebc-a32f8b01d6e0" path="/sf" config-ref="HTTP_Listener_config"/>
 		<salesforce:query doc:name="Query" doc:id="c822c4e1-7138-4735-a450-af8fceb69d9a" config-ref="Salesforce_Config">
-			<salesforce:salesforce-query >SELECT Id, AccountNumber, Name FROM Account</salesforce:salesforce-query>
+			<salesforce:salesforce-query >SELECT Id, AccountNumber, Name FROM Account LIMIT 3</salesforce:salesforce-query>
 		</salesforce:query>
 		<ee:transform doc:name="Transform Message" doc:id="ba2178c6-1804-493e-906f-7febb373bc15" >
 			<ee:message >
