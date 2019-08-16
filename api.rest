@@ -1,0 +1,9 @@
+GET http://ecommerce-cloud-api-v2-0-0.us-e2.cloudhub.io/v2/api/orders
+Content-Type: application/json
+Accept: application/json
+
+###
+GET http://partner-ecommerce-cloud-api.us-e2.cloudhub.io/api/orders
+Content-Type: application/json
+Accept: application/json 
+
